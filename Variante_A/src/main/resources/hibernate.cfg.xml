@@ -1,0 +1,21 @@
+<hibernate-configuration>
+    <session-factory>
+        <!-- JDBC connection -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/test_performance</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">root</property>
+
+        <!-- Hibernate dialect -->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+
+        <!-- Options utiles -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">create</property>
+
+        <!-- Mapping des entités -->
+        <mapping class="org.example.model.Category"/>
+        <mapping class="org.example.model.Item"/>
+    </session-factory>
+</hibernate-configuration>
