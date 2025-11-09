@@ -1,27 +1,24 @@
 package org.example;
 
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import java.net.URI;
 
 public class Main {
-    static void main() {
 
-        Configuration configuration = new Configuration();
-        configuration.configure("hibernate.cfg.xml");
+    public static final String BASE_URI = "http://localhost:8080/api/";
+
+    public static void main(String[] args) {
+        final ResourceConfig rc = new ResourceConfig().packages("org.example.controller");
+        HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+
+        System.out.println("Server started at " + BASE_URI);
         try {
-            SessionFactory sessionFactory = configuration.buildSessionFactory();
-            try (Session session = sessionFactory.openSession()){
-                session.beginTransaction();
-                session.getTransaction().commit();
-            }
-
-
-        } catch (HibernateException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        System.out.println("Hibernate initialisation terminée, vérifie la création des tables !");
     }
 }

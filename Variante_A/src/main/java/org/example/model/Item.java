@@ -3,8 +3,7 @@ package org.example.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "item",
@@ -29,18 +28,18 @@ public class Item {
     @Column(nullable = false)
     private int stock;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @Column(name = "updated_at", nullable = false,
             columnDefinition = "TIMESTAMP DEFAULT NOW()")
-    private LocalDateTime updatedAt;
+    private Timestamp updatedAt;
 
     @PrePersist
     @PreUpdate
     private void updateTimestamp() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
     public Item() {
@@ -94,11 +93,11 @@ public class Item {
         this.category = category;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

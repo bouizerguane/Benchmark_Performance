@@ -18,7 +18,7 @@ public class CategoryController {
     @GET
     public List<Category> getAll(@QueryParam("page") @DefaultValue("0") int page,
                                  @QueryParam("size") @DefaultValue("10") int size) {
-        return service.findAll();
+        return service.findAll(page, size);
     }
 
     @GET
@@ -55,8 +55,10 @@ public class CategoryController {
 
     @GET
     @Path("/{id}/items")
-    public Response getItemsByCategory(@PathParam("id") Long id) {
-        List<?> items = service.getItemsByCategory(id);
+    public Response getItemsByCategory(@PathParam("id") Long id,
+                                       @QueryParam("page") @DefaultValue("0") int page,
+                                       @QueryParam("size") @DefaultValue("10") int size) {
+        List<?> items = service.getItemsByCategory(id, page, size);
         return Response.ok(items).build();
     }
 }

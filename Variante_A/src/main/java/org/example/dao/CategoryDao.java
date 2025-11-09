@@ -6,7 +6,7 @@ import org.example.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class CategoryDao implements Idao<Category> {
@@ -27,9 +27,12 @@ public class CategoryDao implements Idao<Category> {
     }
 
     @Override
-    public List<Category> findAll() {
+    public List<Category> findAll(int page, int size) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Category", Category.class).getResultList();
+            return session.createQuery("FROM Category", Category.class)
+                    .setFirstResult(page * size)
+                    .setMaxResults(size)
+                    .getResultList();
         }
     }
 
@@ -38,7 +41,6 @@ public class CategoryDao implements Idao<Category> {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.find(Category.class, id);
         }
-
     }
 
     @Override
@@ -52,7 +54,6 @@ public class CategoryDao implements Idao<Category> {
             }
             transaction.commit();
             return true;
-
         } catch (Exception e) {
             if (transaction != null) transaction.rollback();
             e.printStackTrace();
@@ -74,7 +75,7 @@ public class CategoryDao implements Idao<Category> {
             }
             existingCategory.setCode(category.getCode());
             existingCategory.setName(category.getName());
-            existingCategory.setUpdatedAt(LocalDateTime.now());
+            existingCategory.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
             session.merge(existingCategory);
 

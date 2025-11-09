@@ -7,7 +7,7 @@ import java.util.List;
 public interface Idao<T> {
 
     boolean save(T entity);
-    List<T> findAll();
+    List<T> findAll(int page, int size);
     T findById(Long id);
     boolean deleteById(Long id);
     boolean update(T entity);

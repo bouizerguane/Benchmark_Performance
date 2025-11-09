@@ -1,9 +1,9 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -21,15 +21,16 @@ public class Category {
 
     @Column(name = "updated_at", nullable = false,
             columnDefinition = "TIMESTAMP DEFAULT NOW()")
-    private LocalDateTime updatedAt;
+    private Timestamp updatedAt;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<Item> items;
 
     @PrePersist
     @PreUpdate
     private void updateTimestamp() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
     public Category() {
@@ -59,11 +60,11 @@ public class Category {
         this.name = name;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 

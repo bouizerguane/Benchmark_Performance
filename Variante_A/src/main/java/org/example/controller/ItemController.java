@@ -20,9 +20,9 @@ public class ItemController {
                              @QueryParam("size") @DefaultValue("10") int size,
                              @QueryParam("categoryId") Long categoryId) {
         if (categoryId != null) {
-            return service.getItemsByCategory(categoryId);
+            return service.findByCategoryId(categoryId, page, size); // <-- pagination ajoutée
         }
-        return service.findAll();
+        return service.findAll(page, size);
     }
 
     @GET

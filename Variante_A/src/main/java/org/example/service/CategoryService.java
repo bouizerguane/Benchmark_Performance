@@ -16,8 +16,8 @@ public class CategoryService {
         return categoryDao.save(category);
     }
 
-    public List<Category> findAll() {
-        return categoryDao.findAll();
+    public List<Category> findAll(int page, int size) {
+        return categoryDao.findAll(page, size);
     }
 
     public Category findById(Long id) {
@@ -32,7 +32,7 @@ public class CategoryService {
         return categoryDao.deleteById(id);
     }
 
-    public List<Item> getItemsByCategory(Long categoryId) {
-        return itemDao.findByCategoryId(categoryId);
+    public List<Item> getItemsByCategory(Long categoryId, int page, int size) {
+        return itemDao.findByCategoryId(categoryId, page, size);
     }
 }

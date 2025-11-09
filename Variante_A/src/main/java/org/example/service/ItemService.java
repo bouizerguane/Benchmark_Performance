@@ -13,8 +13,8 @@ public class ItemService {
         return itemDao.save(item);
     }
 
-    public List<Item> findAll() {
-        return itemDao.findAll();
+    public List<Item> findAll(int page, int size) {
+        return itemDao.findAll(page, size);
     }
 
     public Item findById(Long id) {
@@ -29,8 +29,8 @@ public class ItemService {
         return itemDao.deleteById(id);
     }
 
-    public List<Item> getItemsByCategory(Long categoryId) {
-        return itemDao.findByCategoryId(categoryId);
+    public List<Item> findByCategoryId(Long categoryId, int page, int size) {
+        return itemDao.findByCategoryId(categoryId, page, size);
     }
 
 }

@@ -5,7 +5,7 @@ import org.example.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class ItemDao implements Idao<Item> {
@@ -26,9 +26,12 @@ public class ItemDao implements Idao<Item> {
     }
 
     @Override
-    public List<Item> findAll() {
+    public List<Item> findAll(int page, int size) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Item", Item.class).getResultList();
+            return session.createQuery("FROM Item", Item.class)
+                    .setFirstResult(page * size)
+                    .setMaxResults(size)
+                    .getResultList();
         }
     }
 
@@ -70,13 +73,12 @@ public class ItemDao implements Idao<Item> {
                 return false;
             }
 
-            // Mise à jour des champs
             existingItem.setSku(item.getSku());
             existingItem.setName(item.getName());
             existingItem.setPrice(item.getPrice());
             existingItem.setStock(item.getStock());
             existingItem.setCategory(item.getCategory());
-            existingItem.setUpdatedAt(LocalDateTime.now());
+            existingItem.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
             session.merge(existingItem);
 
@@ -90,11 +92,13 @@ public class ItemDao implements Idao<Item> {
         }
     }
 
-    public List<Item> findByCategoryId(Long categoryId) {
+    public List<Item> findByCategoryId(Long categoryId, int page, int size) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
                             "FROM Item i WHERE i.category.id = :categoryId", Item.class)
                     .setParameter("categoryId", categoryId)
+                    .setFirstResult(page * size)
+                    .setMaxResults(size)
                     .getResultList();
         }
     }
