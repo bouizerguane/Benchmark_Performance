@@ -1,4 +1,4 @@
-package org.example.benchmark_variantC.entities;
+package Benchmark_Performance.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

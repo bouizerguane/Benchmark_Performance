@@ -1,10 +1,17 @@
-package Benchmark_Performance.repositories;
+package org.example.benchmark_variantC.repositories;
 
-import Benchmark_Performance.entities.Item;
+import org.example.benchmark_variantC.entities.Item;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
 
-import java.util.List;
 
+@RepositoryRestResource(path = "items")
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    List<Item> findByCategoryId(Long categoryId);
+
+    @RestResource(path = "byCategory", rel = "byCategory")
+    Page<Item> findByCategoryId(@Param("id") Long categoryId, Pageable pageable);
 }
