@@ -13,5 +13,5 @@ import org.springframework.data.rest.core.annotation.RestResource;
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @RestResource(path = "byCategory", rel = "byCategory")
-    Page<Item> findByCategoryId(@Param("id") Long categoryId, Pageable pageable);
+    Page<Item> findByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 }

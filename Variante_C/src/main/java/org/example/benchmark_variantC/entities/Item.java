@@ -16,10 +16,10 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 64)
+    @Column(nullable = false, length = 64)
     private String sku;
 
-    @Column(nullable = false, length = 128)
+    @Column(nullable = false,unique = true, length = 128)
     private String name;
 
     @Column(nullable = false, precision = 10, scale = 2)

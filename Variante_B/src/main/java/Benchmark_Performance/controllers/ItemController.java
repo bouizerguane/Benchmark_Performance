@@ -6,6 +6,8 @@ import Benchmark_Performance.repositories.CategoryRepository;
 import Benchmark_Performance.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,47 +23,63 @@ public class ItemController {
     private CategoryRepository categoryRepository;
 
     @GetMapping
-    public List<Item> getAllItems(@RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size,
-                                  @RequestParam(required = false) Long categoryId) {
+    public List<Item> getAll(@RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "10") int size,
+                             @RequestParam(required = false) Long categoryId) {
         if (categoryId != null) {
-            return itemRepository.findByCategoryId(categoryId);
+            return itemRepository.findByCategoryId(categoryId, PageRequest.of(page, size));
         }
         return itemRepository.findAll(PageRequest.of(page, size)).getContent();
     }
 
     @GetMapping("/{id}")
-    public Item getItem(@PathVariable Long id) {
-        return itemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+    public ResponseEntity<Item> getById(@PathVariable Long id) {
+        Item item = itemRepository.findById(id).orElse(null);
+        if (item == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.ok(item);
     }
 
     @PostMapping
-    public Item createItem(@RequestBody Item item) {
-        Category category = categoryRepository.findById(item.getCategory().getId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        item.setCategory(category);
-        return itemRepository.save(item);
+    public ResponseEntity<Item> create(@RequestBody Item item) {
+        try {
+            // Vérifier que la catégorie existe
+            if (item.getCategory() != null && item.getCategory().getId() != null) {
+                Category category = categoryRepository.findById(item.getCategory().getId())
+                        .orElseThrow(() -> new RuntimeException("Category not found"));
+                item.setCategory(category);
+            }
+
+            Item savedItem = itemRepository.save(item);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedItem);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @PutMapping("/{id}")
-    public Item updateItem(@PathVariable Long id, @RequestBody Item itemData) {
-        Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item not found"));
-        item.setSku(itemData.getSku());
-        item.setName(itemData.getName());
-        item.setPrice(itemData.getPrice());
-        item.setStock(itemData.getStock());
+    public ResponseEntity<Item> update(@PathVariable Long id, @RequestBody Item item) {
+        if (!itemRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        Category category = categoryRepository.findById(itemData.getCategory().getId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        item.setCategory(category);
+        // Vérifier que la catégorie existe
+        if (item.getCategory() != null && item.getCategory().getId() != null) {
+            Category category = categoryRepository.findById(item.getCategory().getId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            item.setCategory(category);
+        }
 
-        return itemRepository.save(item);
+        item.setId(id);
+        Item updatedItem = itemRepository.save(item);
+        return ResponseEntity.ok(updatedItem);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteItem(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!itemRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         itemRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
